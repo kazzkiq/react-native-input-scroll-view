@@ -11,7 +11,6 @@ import {
   View,
   ScrollView,
   TextInput,
-  KeyboardAvoidingView,
   Keyboard,
   Platform,
   Animated,
@@ -73,14 +72,12 @@ export default class extends PureComponent {
     ]),
     useAnimatedScrollView: PropTypes.bool,
     supportHardwareKeyboard: PropTypes.bool,
-    keyboardAvoidingViewProps: PropTypes.object
   };
 
   static defaultProps = {
     keyboardOffset: 40,
     multilineInputStyle: null,
     useAnimatedScrollView: false,
-    keyboardAvoidingViewProps: null
   };
 
   state = {
@@ -114,12 +111,9 @@ export default class extends PureComponent {
       multilineInputStyle,
       useAnimatedScrollView,
       supportHardwareKeyboard,
-      keyboardAvoidingViewProps,
       children,
       ...otherProps
     } = this.props;
-
-    const kavProps = Object.assign({ behavior: isIOS ? 'padding' : null }, keyboardAvoidingViewProps);
 
     const {
       measureInputVisible,
@@ -132,28 +126,26 @@ export default class extends PureComponent {
     const ScrollComponent = useAnimatedScrollView ? Animated.ScrollView : ScrollView;
 
     return (
-      <KeyboardAvoidingView {...kavProps}>
-        <View style={styles.wrap}>
-          <ScrollComponent ref={this._onRef}
-                           onFocus={this._onFocus}
-                           onBlur={this._onBlur} {...otherProps}>
-            <View onStartShouldSetResponderCapture={isIOS ? this._onTouchStart : null}>
-              {newChildren}
-              <View style={styles.hidden}
-                    pointerEvents="none">
-                {
-                  measureInputVisible &&
-                  <TextInput style={[multilineInputStyle, { width: measureInputWidth }]}
-                             value={measureInputValue}
-                             onContentSizeChange={this._onContentSizeChangeMeasureInput}
-                             editable={false}
-                             multiline />
-                }
-              </View>
+      <View style={styles.wrap}>
+        <ScrollComponent ref={this._onRef}
+                          onFocus={this._onFocus}
+                          onBlur={this._onBlur} {...otherProps}>
+          <View onStartShouldSetResponderCapture={isIOS ? this._onTouchStart : null}>
+            {newChildren}
+            <View style={styles.hidden}
+                  pointerEvents="none">
+              {
+                measureInputVisible &&
+                <TextInput style={[multilineInputStyle, { width: measureInputWidth }]}
+                            value={measureInputValue}
+                            onContentSizeChange={this._onContentSizeChangeMeasureInput}
+                            editable={false}
+                            multiline />
+              }
             </View>
-          </ScrollComponent>
-        </View>
-      </KeyboardAvoidingView>
+          </View>
+        </ScrollComponent>
+      </View>
     );
   }
 
